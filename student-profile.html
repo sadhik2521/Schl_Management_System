@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard - International Future Academy</title>
+    <style>
+        /* --- The Global/Future Tech Palette --- */
+       :root {
+    /* Decent & Professional Palette */
+    --bg-light: #f8fafc;         /* Soft slate white */
+    --brand-dark: #1e293b;       /* Deep slate (Professional) */
+    --brand-mid: #334155;        /* Medium slate */
+    --accent-glow: #38bdf8;      /* Soft sky blue (not neon) */
+    --btn-primary: #2563eb;      /* Corporate blue */
+    --btn-hover: #1d4ed8;        /* Deep blue */
+    --text-dark: #0f172a;        /* Near black */
+    --text-light: #64748b;       /* Muted slate text */
+    --border-color: #e2e8f0;     /* Soft border */
+    --card-bg: #ffffff;
+    --success: #10b981;          /* Emerald green */
+    --danger: #ef4444;           /* Soft red */
+}
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+        }
+
+        /* --- TOP NAVIGATION BAR --- */
+        .navbar {
+            background: linear-gradient(90deg, var(--brand-dark) 0%, var(--brand-mid) 100%);
+            color: white;
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(11, 19, 43, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 35px;
+            height: 35px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 229, 255, 0.3);
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--accent-glow);
+        }
+
+        .nav-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        
+        .nav-title span {
+            color: var(--accent-glow);
+            font-weight: 400;
+        }
+
+        .user-controls {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .welcome-text {
+            font-size: 0.95rem;
+            color: #a0aec0;
+        }
+        
+        .welcome-text strong {
+            color: white;
+        }
+
+        .logout-btn {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background-color: #ff4d4d;
+            border-color: #ff4d4d;
+        }
+
+        /* --- MAIN DASHBOARD LAYOUT --- */
+        .dashboard-container {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 8px 25px rgba(11, 19, 43, 0.05);
+            border: 1px solid var(--border-color);
+        }
+
+        /* --- PROFILE SIDEBAR --- */
+        .profile-sidebar {
+            text-align: center;
+        }
+
+        .avatar {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, var(--btn-primary), var(--accent-glow));
+            border-radius: 50%;
+            margin: 0 auto 20px auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 3rem;
+            font-weight: bold;
+            box-shadow: 0 10px 20px rgba(0, 86, 210, 0.2);
+            border: 4px solid white;
+        }
+
+        .student-name {
+            font-size: 1.5rem;
+            color: var(--brand-dark);
+            margin-bottom: 5px;
+        }
+
+        .student-id {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+        }
+
+        .info-group {
+            text-align: left;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .info-group:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .info-label {
+            display: block;
+            font-size: 0.75rem;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .info-value {
+            font-size: 1rem;
+            color: var(--text-dark);
+            font-weight: 500;
+        }
+
+        /* --- ACADEMIC CONTENT AREA --- */
+        .section-header {
+            font-size: 1.25rem;
+            color: var(--brand-dark);
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        .work-list {
+            list-style: none;
+        }
+
+        .work-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            margin-bottom: 12px;
+            background-color: var(--bg-light);
+            border-radius: 8px;
+            border-left: 4px solid var(--btn-primary);
+            transition: transform 0.2s ease;
+        }
+
+        .work-item:hover {
+            transform: translateX(5px);
+            background-color: #e8eff6;
+        }
+
+        .work-details h4 {
+            font-size: 1.05rem;
+            margin-bottom: 4px;
+            color: var(--brand-dark);
+        }
+
+        .work-details p {
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        .grade-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .grade-a { background-color: rgba(0, 200, 83, 0.1); color: var(--success); }
+        .grade-pending { background-color: rgba(255, 171, 0, 0.1); color: var(--warning); }
+        .grade-b { background-color: rgba(0, 86, 210, 0.1); color: var(--btn-primary); }
+
+        #loading {
+            text-align: center;
+            font-size: 1.2rem;
+            color: var(--text-light);
+            padding: 50px;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-container {
+                grid-template-columns: 1fr;
+            }
+            .user-controls .welcome-text {
+                display: none;
+            }
+            .navbar {
+                padding: 15px 20px;
+            }
+        }
+        /* Update buttons for a flatter, more modern look */
+.submit-btn, .logout-btn {
+    border-radius: 6px; /* Slightly sharper corners */
+    letter-spacing: 0.3px;
+    box-shadow: none; /* Remove heavy glows */
+    transition: background 0.2s ease;
+}
+
+/* Make inputs look cleaner */
+input, select {
+    border: 1px solid var(--border-color) !important;
+    background-color: #fff !important;
+    color: var(--text-dark) !important;
+}
+
+/* Subtle Hover for the Home Icon */
+.home-link {
+    color: var(--text-light);
+}
+.home-link:hover {
+    color: var(--btn-primary);
+    filter: none; /* Removed the neon glow */
+    transform: translateY(-1px);
+}
+
+/* Clean up the Navigation Bar */
+.navbar {
+    background: var(--brand-dark); /* Solid professional dark blue/slate */
+    border-bottom: 3px solid var(--btn-primary); /* Simple accent line */
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+        /* --- Home Icon Styling --- */
+.home-link {
+    color: #a0aec0;
+    margin-right: auto;
+    margin-left: 30px;
+    display: flex;
+    align-items: center;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.home-link:hover {
+    color: var(--accent-glow);
+    filter: drop-shadow(0 0 8px var(--accent-glow));
+    transform: scale(1.1);
+}
+
+/* On mobile, keep it tight */
+@media (max-width: 600px) {
+    .home-link {
+        margin-left: 15px;
+    }
+}
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="brand-logo">
+            <div class="logo-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(45 12 12)"></ellipse>
+                    <ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(-45 12 12)"></ellipse>
+                </svg>
+            </div>
+            <div class="nav-title">IFA <span>Portal</span></div>
+        </div>
+        <a href="index.html" class="home-link" title="Back to Login">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+    </a>
+        <div class="user-controls">
+            <div class="welcome-text" id="navWelcome">Loading...</div>
+            <button class="logout-btn" onclick="logout()">Sign Out</button>
+        </div>
+    </nav>
+
+    <div id="loading">Connecting to Secure Server...</div>
+    
+    <div class="dashboard-container" id="dashboardContent" style="display: none;">
+        <div class="card profile-sidebar">
+            <div class="avatar" id="avatarInitials">--</div>
+            <h2 class="student-name" id="profileName">Loading...</h2>
+            <div class="student-id" id="profileId">ID: --------</div>
+            
+            <div class="info-group">
+                <span class="info-label">Academic Program</span>
+                <span class="info-value" id="profileMajor">--</span>
+            </div>
+            <div class="info-group">
+                <span class="info-label">Student Email</span>
+                <span class="info-value" id="profileEmail">--</span>
+            </div>
+            <div class="info-group">
+                <span class="info-label">Enrollment Status</span>
+                <span class="info-value" id="profileEnrollment">--</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="section-header">
+                <h3>Recent Academic Activity</h3>
+            </div>
+            <ul class="work-list" id="workList">
+                </ul>
+        </div>
+    </div>
+
+    <script>
+        // 1. Authenticate Session
+        const sessionData = localStorage.getItem('userSession');
+        
+        if (!sessionData) {
+            // Kick them back to login if no session is found
+            window.location.href = 'index.html';
+        } else {
+            const user = JSON.parse(sessionData);
+            document.getElementById('navWelcome').innerHTML = `Welcome back, <strong>${user.name}</strong>`;
+            // Fetch data from MongoDB via the server
+            loadProfileData(user.id);
+        }
+
+        // 2. Fetch Data from our Node.js Backend
+        async function loadProfileData(userId) {
+            try {
+                const response = await fetch(`http://localhost:3000/api/student/${userId}`);
+                const profile = await response.json();
+
+                if (response.ok) {
+                    renderProfile(profile, userId);
+                } else {
+                    document.getElementById('loading').innerHTML = `Error: Profile not found.`;
+                }
+            } catch (error) {
+                console.error("Failed to fetch profile:", error);
+                document.getElementById('loading').innerHTML = `Connection Error. Is the Node server running?`;
+            }
+        }
+
+        // 3. Inject the real data into the HTML
+        function renderProfile(profile, userId) {
+            // Hide loading, show dashboard
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('dashboardContent').style.display = 'grid';
+
+            // Populate Sidebar
+            document.getElementById('profileName').textContent = profile.name;
+            document.getElementById('profileId').textContent = `ID: ${userId.substring(0, 8).toUpperCase()}`;
+            document.getElementById('profileEmail').textContent = profile.email;
+            document.getElementById('profileMajor').textContent = profile.major;
+            document.getElementById('profileEnrollment').textContent = `Active since ${profile.enrollmentDate}`;
+            
+            // Create Initials for the Avatar 
+            const initials = profile.name.split(' ').map(n => n[0]).join('');
+            document.getElementById('avatarInitials').textContent = initials;
+
+            // Generate the list of recent work
+            let workHTML = '';
+            profile.recentWork.forEach(work => {
+                let badgeClass = 'grade-b'; 
+                if (work.grade.includes('A')) badgeClass = 'grade-a';
+                if (work.grade.includes('Pending')) badgeClass = 'grade-pending';
+
+                workHTML += `
+                    <li class="work-item">
+                        <div class="work-details">
+                            <h4>${work.title}</h4>
+                            <p>${work.type}</p>
+                        </div>
+                        <div class="grade-badge ${badgeClass}">${work.grade}</div>
+                    </li>`;
+            });
+            document.getElementById('workList').innerHTML = workHTML;
+        }
+
+        // 4. Secure Logout Function
+        function logout() {
+            localStorage.removeItem('userSession');
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>International Future Academy - Portal</title>
+    <style>
+        :root {
+            --bg-light: #f8fafc;         
+            --brand-dark: #1e293b;       
+            --brand-mid: #334155;        
+            --accent-soft: #38bdf8;      
+            --btn-primary: #2563eb;      
+            --btn-hover: #1d4ed8;        
+            --text-dark: #0f172a;        
+            --text-light: #64748b;       
+            --input-border: #cbd5e1;     
+            --glass: rgba(255, 255, 255, 0.95);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+#togglePassword:hover {
+    color: var(--btn-primary) !important;
+}
+        body {
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            background-color: var(--bg-light);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-image: radial-gradient(at 0% 0%, hsla(210,100%,96%,1) 0, transparent 50%), 
+                              radial-gradient(at 50% 0%, hsla(225,100%,96%,1) 0, transparent 50%), 
+                              radial-gradient(at 100% 0%, hsla(210,100%,96%,1) 0, transparent 50%);
+        }
+
+        .main-container {
+            display: flex;
+            width: 1000px;
+            height: 650px;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        /* --- Visual Side (Left) --- */
+        .visual-panel {
+            flex: 1;
+            background: linear-gradient(135deg, var(--brand-dark) 0%, var(--brand-mid) 100%);
+            padding: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Soft Decorative Circles */
+        .visual-panel::before {
+            content: "";
+            position: absolute;
+            top: -10%; right: -10%;
+            width: 300px; height: 300px;
+            background: rgba(56, 189, 248, 0.1);
+            border-radius: 50%;
+        }
+
+        .logo-box {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 2;
+        }
+
+        .logo-square {
+            width: 45px; height: 45px;
+            background: var(--btn-primary);
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        .brand-text h2 { font-size: 1.2rem; letter-spacing: 1px; text-transform: uppercase; }
+        .brand-text p { font-size: 0.8rem; opacity: 0.7; }
+
+        .welcome-msg h1 { font-size: 3rem; line-height: 1.1; font-weight: 700; margin-bottom: 20px; z-index: 2; }
+        .welcome-msg p { font-size: 1.1rem; color: #cbd5e1; line-height: 1.6; max-width: 300px; }
+
+        /* --- Form Side (Right) --- */
+        .form-panel {
+            flex: 1;
+            padding: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: white;
+        }
+
+        .form-panel h2 { font-size: 1.8rem; color: var(--text-dark); margin-bottom: 8px; }
+        .form-panel p.sub { color: var(--text-light); margin-bottom: 35px; font-size: 0.95rem; }
+
+        .form-group { margin-bottom: 20px; }
+        .form-group label {
+            display: block; margin-bottom: 8px; 
+            font-size: 0.85rem; font-weight: 600; color: var(--brand-mid);
+        }
+
+        .input-box {
+            width: 100%; padding: 14px 16px;
+            border: 1px solid var(--input-border);
+            border-radius: 10px; font-size: 1rem;
+            transition: all 0.2s ease; outline: none;
+            background: #fcfcfc;
+        }
+
+        .input-box:focus {
+            border-color: var(--btn-primary);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+            background: white;
+        }
+
+        /* Role Selector Styling */
+        .role-select {
+            display: flex; gap: 10px; margin-bottom: 25px;
+        }
+
+        .role-btn {
+            flex: 1; padding: 10px; border: 1px solid var(--input-border);
+            border-radius: 8px; background: white; cursor: pointer;
+            font-size: 0.85rem; font-weight: 500; color: var(--text-light);
+            transition: all 0.2s; text-align: center;
+        }
+
+        .role-btn.active {
+            background: var(--brand-dark); color: white; border-color: var(--brand-dark);
+        }
+
+        .submit-btn {
+            width: 100%; padding: 16px;
+            background: var(--btn-primary); color: white;
+            border: none; border-radius: 10px;
+            font-size: 1rem; font-weight: 600; cursor: pointer;
+            transition: all 0.2s; margin-top: 10px;
+        }
+
+        .submit-btn:hover { background: var(--btn-hover); transform: translateY(-1px); }
+        
+        #message { text-align: center; margin-top: 20px; font-size: 0.9rem; font-weight: 500; }
+
+        @media (max-width: 950px) {
+            .main-container { width: 95%; height: auto; flex-direction: column; }
+            .visual-panel { padding: 40px; }
+            .form-panel { padding: 40px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="main-container">
+    <div class="visual-panel">
+        <div class="logo-box">
+            <div class="logo-square">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            </div>
+            <div class="brand-text">
+                <h2>I.F. Academy</h2>
+                <p>Excellence in Innovation</p>
+            </div>
+        </div>
+
+        <div class="welcome-msg">
+            <h1>Design Your <br><span style="color: var(--accent-soft)">Future</span> Today.</h1>
+            <p>Access your global academic portal with one secure login.</p>
+        </div>
+        
+        <div style="font-size: 0.8rem; opacity: 0.5;">© 2026 International Future Academy</div>
+    </div>
+
+    <div class="form-panel">
+        <h2>Welcome Back</h2>
+        <p class="sub">Please enter your credentials to continue.</p>
+
+        <form id="loginForm">
+            <label style="display:block; margin-bottom:8px; font-size:0.85rem; font-weight:600; color:var(--brand-mid);">SELECT ROLE</label>
+            <div class="role-select">
+                <div class="role-btn active" onclick="setRole('student', this)">Student</div>
+                <div class="role-btn" onclick="setRole('staff', this)">Staff</div>
+                <div class="role-btn" onclick="setRole('admin', this)">Admin</div>
+            </div>
+            <input type="hidden" id="role" value="student">
+
+            <div class="form-group">
+                <label for="username">REGISTER NUMBER</label>
+                <input type="text" id="username" class="input-box" placeholder="e.g. IFA-2026-001" required>
+            </div>
+
+           <div class="form-group">
+    <label for="password">PASSWORD</label>
+    <div style="position: relative; display: flex; align-items: center;">
+        <input type="password" id="password" class="input-box" placeholder="••••••••" required style="padding-right: 45px;">
+        <button type="button" id="togglePassword" style="position: absolute; right: 12px; background: none; border: none; cursor: pointer; color: var(--text-light); display: flex; align-items: center;">
+            <svg id="eyeIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+        </button>
+    </div>
+</div>
+
+            <button type="submit" class="submit-btn" id="submitBtn">Sign In to Dashboard</button>
+            <div id="message"></div>
+        </form>
+    </div>
+</div>
+
+<script>
+   // Add this at the very beginning of your <script> tag
+const passwordInput = document.getElementById('password');
+const toggleBtn = document.getElementById('togglePassword');
+const eyeIcon = document.getElementById('eyeIcon');
+
+if (toggleBtn) {
+    toggleBtn.addEventListener('click', () => {
+        // Toggle the type attribute
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+        
+        // Toggle the eye icon opacity to show it's "active"
+        eyeIcon.style.opacity = type === 'text' ? '0.5' : '1';
+        eyeIcon.style.stroke = type === 'text' ? 'var(--btn-primary)' : 'currentColor';
+    });
+}
+    function setRole(role, btn) {
+        document.getElementById('role').value = role;
+        document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    }
+
+    document.getElementById('loginForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const role = document.getElementById('role').value;
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        const messageDiv = document.getElementById('message');
+        const submitBtn = document.getElementById('submitBtn');
+
+        submitBtn.textContent = "Verifying Identity...";
+        submitBtn.disabled = true;
+
+        try {
+            const response = await fetch('http://localhost:3000/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ role, username, password })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                messageDiv.style.color = "var(--success)";
+                messageDiv.textContent = "Authenticated. Redirecting...";
+                
+                localStorage.setItem('userSession', JSON.stringify(data.user));
+                localStorage.setItem('authToken', data.token);
+                
+                setTimeout(() => {
+                    if (data.user.role === 'student') window.location.href = 'student-profile.html';
+                    else if (data.user.role === 'admin') window.location.href = 'admin-profile.html';
+                    else alert("Staff dashboard coming soon.");
+                }, 1000);
+            } else {
+                messageDiv.style.color = "var(--danger)";
+                messageDiv.textContent = data.message;
+                submitBtn.textContent = "Sign In to Dashboard";
+                submitBtn.disabled = false;
+            }
+        } catch (error) {
+            messageDiv.style.color = "var(--danger)";
+            messageDiv.textContent = "Server connection error.";
+            submitBtn.disabled = false;
+        }
+    });
+</script>
+
+</body>
+</html>
