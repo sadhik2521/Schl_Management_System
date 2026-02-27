@@ -1,6 +1,5 @@
 const express = require('express');
 const cors = require('cors');
-const mongoose = require('mongoose');
 const bcrypt = require('bcrypt'); 
 const jwt = require('jsonwebtoken'); 
 
@@ -12,96 +11,78 @@ app.use(express.json());
 app.use(cors());
 
 // ==========================================
-// 1. DATABASE CONNECTION
+// 1. JAVASCRIPT IN-MEMORY DATABASE
 // ==========================================
-const mongoURI = 'mongodb://127.0.0.1:27017/ifa_portal';
-mongoose.connect(mongoURI)
-    .then(() => console.log('✅ Connected to MongoDB successfully!'))
-    .catch(err => console.error('❌ MongoDB connection error:', err));
+// These arrays replace your MongoDB collections. 
+// Note: Data stored here will reset if you restart the Node.js server.
+const users = [];
+const studentProfiles = [];
+const staffProfiles = [];
+const adminProfiles = [];
 
-
-// ==========================================
-// 2. DATABASE SCHEMAS
-// ==========================================
-const workSchema = new mongoose.Schema({ title: String, type: String, grade: String }, { _id: false });
-
-const StudentProfile = mongoose.model('StudentProfile', new mongoose.Schema({
-    name: String, email: String, major: String, enrollmentDate: String, recentWork: [workSchema]
-}));
-
-const StaffProfile = mongoose.model('StaffProfile', new mongoose.Schema({
-    name: String, email: String, department: String, title: String, classesTaught: [String]
-}));
-
-const AdminProfile = mongoose.model('AdminProfile', new mongoose.Schema({
-    name: String, email: String, office: String, permissions: [String]
-}));
-
-const User = mongoose.model('User', new mongoose.Schema({
-    role: String,
-    username: { type: String, required: true, unique: true }, 
-    password: { type: String, required: true }, 
-    profileId: mongoose.Schema.Types.ObjectId 
-}));
+// A simple helper function to generate unique IDs for new users
+const generateId = () => Math.random().toString(36).substr(2, 9);
 
 // ==========================================
-// 3. AUTO-SEED DATABASE
+// 2. AUTO-SEED ADMIN ACCOUNT
 // ==========================================
-async function seedDatabase() {
-    try {
-        // 1. Check if users already exist
-        const userCount = await User.countDocuments();
-        
-        // 2. ONLY run the seeding if the database is brand new (count is 0)
-        if (userCount === 0) {
-            console.log("Empty database detected. Generating initial admin account...");
+async function seedAdmin() {
+    // Hashes the password '12345' so it works seamlessly with the login route
+    const hashedAdminPassword = await bcrypt.hash('12345', 10);
+    const adminProfileId = generateId();
 
-            const hashedAdminPassword = await bcrypt.hash('admin123', 10);
-            
-            const adminData = await AdminProfile.create({ 
-                name: 'System Admin', 
-                email: 'admin@ifa.edu', 
-                permissions: ['All']
-            });
+    // 1. Create the Admin Profile
+    adminProfiles.push({
+        id: adminProfileId,
+        name: 'System Administrator',
+        email: 'admin@ifa.edu',
+        permissions: ['All']
+    });
+// 2. Create the Admin Login Credentials
+    users.push({
+        id: generateId(),
+        role: 'admin',
+        username: 'ADMIN', // <-- Change this to uppercase
+        password: hashedAdminPassword,
+        profileId: adminProfileId
+    });
+   
 
-            await User.create({ 
-                role: 'admin', 
-                username: 'admin1', 
-                password: hashedAdminPassword, 
-                profileId: adminData._id 
-            });
-
-            console.log("✅ Initial Admin created. No other data was erased.");
-        } else {
-            console.log("📊 Database already contains data. Skipping reset.");
-        }
-    } catch (error) {
-        console.error("❌ Error during startup:", error);
-    }
+    console.log("✅ Default Admin created. (Role: Admin, Username: admin, Password: 12345)");
 }
-seedDatabase();
+// Run the seed function when the server starts
+seedAdmin();
+
 
 // ==========================================
-// 4. SECURE API ENDPOINTS
+// 3. SECURE API ENDPOINTS
 // ==========================================
 
+// --- LOGIN ROUTE ---
 app.post('/login', async (req, res) => {
     const { role, username, password } = req.body;
-
+// ADD THESE TWO LINES:
+    console.log(`\n--- LOGIN ATTEMPT ---`);
+    console.log(`Trying to log in as -> Role: '${role}', Username: '${username}', Password: '${password}'`);
     try {
-        const user = await User.findOne({ role, username });
+        // Find the user in our JavaScript array
+        const user = users.find(u => u.role === role && u.username.toLowerCase() === username.toLowerCase());
         if (!user) return res.status(401).json({ message: 'Invalid credentials' });
 
+        // Check if the password matches
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) return res.status(401).json({ message: 'Invalid credentials' });
 
+        // Find the specific profile data based on their role
         let profileData = null;
-        if (role === 'student') profileData = await StudentProfile.findById(user.profileId);
-        else if (role === 'staff') profileData = await StaffProfile.findById(user.profileId);
-        else if (role === 'admin') profileData = await AdminProfile.findById(user.profileId);
+        if (role === 'student') profileData = studentProfiles.find(p => p.id === user.profileId);
+        else if (role === 'staff') profileData = staffProfiles.find(p => p.id === user.profileId);
+        else if (role === 'admin') profileData = adminProfiles.find(p => p.id === user.profileId);
+
+        if (!profileData) return res.status(404).json({ message: 'Profile data not found' });
 
         const token = jwt.sign(
-            { userId: user._id, role: user.role, profileId: user.profileId }, 
+            { userId: user.id, role: user.role, profileId: user.profileId }, 
             JWT_SECRET, { expiresIn: '2h' }
         );
 
@@ -115,45 +96,62 @@ app.post('/login', async (req, res) => {
     }
 });
 
-// --- UPDATED: ADD NEW USER ENDPOINT ---
+// --- ADD NEW USER ROUTE (Used by the Admin) ---
 app.post('/api/users/add', async (req, res) => {
-    // Notice we added major and department here!
     const { role, username, password, name, email, major, department } = req.body;
 
     try {
-        const existingUser = await User.findOne({ username });
+        // Check if username is already taken in our array
+        const existingUser = users.find(u => u.username === username);
         if (existingUser) return res.status(400).json({ message: 'Register Number / Username already taken' });
 
         const hashedPassword = await bcrypt.hash(password, 10);
+        const newProfileId = generateId();
 
-        let savedProfile;
+        // Push new profile to the correct array based on role
         if (role === 'student') {
-            savedProfile = await StudentProfile.create({ 
-                name, email, major: major || 'Undeclared', enrollmentDate: new Date().toLocaleDateString(), recentWork: [] 
+            studentProfiles.push({ 
+                id: newProfileId, 
+                name, 
+                email, 
+                major: major || 'Undeclared', 
+                enrollmentDate: new Date().toLocaleDateString(), 
+                recentWork: [] 
             });
         } else if (role === 'staff') {
-            savedProfile = await StaffProfile.create({ 
-                name, email, department: department || 'General Faculty', classesTaught: [] 
+            staffProfiles.push({ 
+                id: newProfileId, 
+                name, 
+                email, 
+                department: department || 'General Faculty', 
+                classesTaught: [] 
             });
         } else if (role === 'admin') {
-            savedProfile = await AdminProfile.create({ name, email, permissions: [] });
+            adminProfiles.push({ id: newProfileId, name, email, permissions: [] });
         }
 
-        const newUser = await User.create({
-            role, username, password: hashedPassword, profileId: savedProfile._id
+        // Push the login credentials to the users array
+        users.push({
+            id: generateId(),
+            role, 
+            username, 
+            password: hashedPassword, 
+            profileId: newProfileId
         });
 
         res.status(201).json({ message: `${role.toUpperCase()} account created successfully!` });
 
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Database error' });
+        res.status(500).json({ message: 'Server error creating user' });
     }
 });
 
-app.get('/api/student/:id', async (req, res) => {
+// --- GET STUDENT PROFILE ROUTE ---
+app.get('/api/student/:id', (req, res) => {
     try {
-        const profile = await StudentProfile.findById(req.params.id);
+        // Search the studentProfiles array for the specific ID
+        const profile = studentProfiles.find(p => p.id === req.params.id);
         if (profile) res.status(200).json(profile);
         else res.status(404).json({ message: 'Profile not found' });
     } catch (error) {
@@ -162,7 +160,7 @@ app.get('/api/student/:id', async (req, res) => {
 });
 
 // ==========================================
-// 5. START SERVER
+// 4. START SERVER
 // ==========================================
 app.listen(PORT, () => {
     console.log(`🚀 Secure Server is running on http://localhost:${PORT}`);
