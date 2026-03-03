@@ -154,10 +154,62 @@
             .visual-panel { padding: 40px; }
             .form-panel { padding: 40px; }
         }
+        /* ==========================================
+           DARK MODE STYLES & OVERRIDES 
+           ========================================== */
+        body.dark-mode {
+            --bg-light: #0f172a;         /* Dark background */
+            --card-bg: #1e293b;          /* Darker panels */
+            --text-dark: #f8fafc;        /* White text */
+            --text-light: #94a3b8;       /* Muted gray text */
+            --border-color: #334155;     /* Dark borders */
+            --input-border: #334155;
+            background-image: none !important; /* Removes login radial gradient */
+            background-color: var(--bg-light);
+        }
+        
+        /* Specific element overrides for dark mode */
+        body.dark-mode label { color: #f8fafc !important; }
+        body.dark-mode .main-container, 
+        body.dark-mode .form-panel { background-color: var(--card-bg); }
+        
+        body.dark-mode .input-box, 
+        body.dark-mode input, 
+        body.dark-mode select { background-color: #0f172a !important; color: #f8fafc !important; }
+        
+        body.dark-mode .role-btn { background-color: #0f172a; color: #94a3b8; border-color: #ffffff; }
+        body.dark-mode .role-btn.active { background-color: var(--btn-primary); color: white; border-color: var(--btn-primary); }
+        
+        body.dark-mode .work-item { background-color: #0f172a; border-left-color: var(--accent-glow); }
+        body.dark-mode .work-item:hover { background-color: #1e293b; }
+
+        /* Floating Toggle Button */
+        .theme-toggle {
+            position: fixed; bottom: 25px; right: 25px;
+            background: var(--brand-dark); color: white;
+            border: 2px solid var(--btn-primary); border-radius: 50%;
+            width: 50px; height: 50px; cursor: pointer;
+            display: flex; justify-content: center; align-items: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3); z-index: 9999;
+            transition: all 0.3s ease;
+        }
+        .theme-toggle:hover { transform: scale(1.1); }
+        body.dark-mode .theme-toggle { background: #f8fafc; color: #0f172a; border-color: var(--accent-glow); }
     </style>
 </head>
 <body>
-
+<button class="theme-toggle" id="themeToggle" title="Toggle Dark/Light Mode">
+        <svg id="moonIcon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: block;">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+        <svg id="sunIcon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+    </button>
 <div class="main-container">
     <div class="visual-panel">
         <div class="logo-box">
@@ -214,8 +266,41 @@
         </form>
     </div>
 </div>
-
 <script>
+        // ==========================================
+        // DARK MODE TOGGLE LOGIC
+        // ==========================================
+        const themeToggleBtn = document.getElementById('themeToggle');
+        const moonIcon = document.getElementById('moonIcon');
+        const sunIcon = document.getElementById('sunIcon');
+
+        // 1. Check if the user already selected Dark Mode previously
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('dark-mode');
+            moonIcon.style.display = 'none';
+            sunIcon.style.display = 'block';
+        }
+
+        // 2. Listen for button clicks
+        themeToggleBtn.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            
+            // If dark mode is now ON, save it and show the Sun
+            if (document.body.classList.contains('dark-mode')) {
+                localStorage.setItem('theme', 'dark');
+                moonIcon.style.display = 'none';
+                sunIcon.style.display = 'block';
+            } else {
+                // If dark mode is OFF, save it and show the Moon
+                localStorage.setItem('theme', 'light');
+                moonIcon.style.display = 'block';
+                sunIcon.style.display = 'none';
+            }
+        });
+    </script>
+<script>
+    
+    
    // Add this at the very beginning of your <script> tag
 const passwordInput = document.getElementById('password');
 const toggleBtn = document.getElementById('togglePassword');
@@ -286,3 +371,4 @@ if (toggleBtn) {
 
 </body>
 </html>
+
