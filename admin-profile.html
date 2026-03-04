@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - International Future Academy</title>
+    <title>Admin Dashboard - IFA Command Center</title>
     <style>
         :root {
-            --bg-light: #f8fafc;
-            --brand-dark: #1e293b;
-            --brand-mid: #334155;
+            --bg-light: #f1f5f9;
+            --brand-dark: #0f172a;
+            --brand-mid: #1e293b;
             --accent-glow: #38bdf8;
             --btn-primary: #2563eb;
             --btn-hover: #1d4ed8;
@@ -18,6 +18,7 @@
             --card-bg: #ffffff;
             --success: #10b981;
             --danger: #ef4444;
+            --warning: #f59e0b;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -28,12 +29,13 @@
             color: var(--text-dark);
         }
 
+        /* --- NAVIGATION BAR --- */
         .navbar {
             background: var(--brand-dark);
             border-bottom: 3px solid var(--btn-primary);
             color: white; padding: 15px 40px; display: flex;
             justify-content: space-between; align-items: center;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); position: sticky; top: 0; z-index: 100;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); position: sticky; top: 0; z-index: 100;
         }
 
         .brand-logo { display: flex; align-items: center; gap: 12px; }
@@ -49,26 +51,33 @@
         .nav-title span { color: var(--accent-glow); font-weight: 400; }
 
         .user-controls { display: flex; align-items: center; gap: 20px; }
-        .welcome-text { font-size: 0.95rem; color: #a0aec0; }
+        .welcome-text { font-size: 0.95rem; color: #94a3b8; }
         .welcome-text strong { color: white; }
 
         .logout-btn {
             background-color: rgba(255, 255, 255, 0.1); color: white;
             border: 1px solid rgba(255, 255, 255, 0.2); padding: 8px 16px;
             border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 600;
-            transition: all 0.3s ease; box-shadow: none; letter-spacing: 0.3px;
+            transition: all 0.2s ease;
         }
-
         .logout-btn:hover { background-color: var(--danger); border-color: var(--danger); }
 
+        .home-link {
+            color: #94a3b8; margin-right: auto; margin-left: 30px;
+            display: flex; align-items: center; transition: all 0.2s ease; text-decoration: none;
+        }
+        .home-link:hover { color: var(--btn-primary); transform: translateY(-1px); }
+
+        /* --- DASHBOARD LAYOUT --- */
         .dashboard-container {
-            max-width: 1200px; margin: 40px auto; padding: 0 20px;
-            display: grid; grid-template-columns: 1fr 2.5fr; gap: 30px;
+            max-width: 1300px; margin: 40px auto; padding: 0 20px;
+            display: grid; grid-template-columns: 300px 1fr; gap: 30px;
         }
 
         .card {
-            background-color: var(--card-bg); border-radius: 12px; padding: 30px;
-            box-shadow: 0 8px 25px rgba(11, 19, 43, 0.05); border: 1px solid var(--border-color);
+            background-color: var(--card-bg); border-radius: 12px; padding: 25px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            border: 1px solid var(--border-color);
         }
 
         .section-header {
@@ -77,74 +86,102 @@
             border-bottom: 2px solid var(--border-color); padding-bottom: 10px;
         }
 
-        .profile-sidebar { text-align: center; }
+        /* --- ADMIN SIDEBAR --- */
+        .profile-sidebar { text-align: center; height: fit-content; }
 
         .avatar {
             width: 100px; height: 100px;
             background: linear-gradient(135deg, var(--brand-dark), var(--brand-mid));
-            border-radius: 50%; margin: 0 auto 20px auto; display: flex;
+            border-radius: 50%; margin: 0 auto 15px auto; display: flex;
             justify-content: center; align-items: center; color: white;
             font-size: 2.5rem; font-weight: bold; border: 4px solid var(--accent-glow);
+            box-shadow: 0 4px 10px rgba(56, 189, 248, 0.2);
         }
 
-        .admin-name { font-size: 1.5rem; color: var(--brand-dark); margin-bottom: 5px; }
+        .admin-name { font-size: 1.4rem; color: var(--brand-dark); margin-bottom: 5px; }
 
         .admin-badge {
-            display: inline-block; background-color: rgba(0, 229, 255, 0.1);
+            display: inline-block; background-color: rgba(37, 99, 235, 0.1);
             color: var(--btn-primary); padding: 4px 12px; border-radius: 20px;
-            font-size: 0.8rem; font-weight: 700; margin-bottom: 20px; text-transform: uppercase;
+            font-size: 0.75rem; font-weight: 700; margin-bottom: 20px; text-transform: uppercase;
         }
 
+        /* --- MAIN CONTENT COLUMN --- */
+        .main-column { display: flex; flex-direction: column; gap: 30px; }
+
+        /* --- STAT CARDS --- */
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        
+        .stat-card {
+            background: var(--card-bg); padding: 20px; border-radius: 12px;
+            border: 1px solid var(--border-color); display: flex; align-items: center; gap: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); transition: transform 0.2s;
+        }
+        .stat-card:hover { transform: translateY(-3px); }
+        
+        .stat-icon {
+            width: 50px; height: 50px; border-radius: 10px;
+            display: flex; justify-content: center; align-items: center;
+        }
+        .stat-icon.blue { background: rgba(37, 99, 235, 0.1); color: var(--btn-primary); }
+        .stat-icon.green { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+        .stat-icon.orange { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
+        
+        .stat-info h4 { font-size: 0.85rem; color: var(--text-light); text-transform: uppercase; margin-bottom: 5px; }
+        .stat-info p { font-size: 1.8rem; font-weight: 700; color: var(--brand-dark); line-height: 1; }
+
+        /* --- ADD USER FORM --- */
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .form-group { margin-bottom: 15px; }
         .form-group.full-width { grid-column: 1 / -1; }
 
         .form-group label {
-            display: block; margin-bottom: 8px; color: var(--text-dark);
+            display: block; margin-bottom: 8px; color: var(--brand-mid);
             font-weight: 600; font-size: 0.85rem; text-transform: uppercase;
         }
 
         .form-group input, .form-group select {
-            width: 100%; padding: 12px 16px; border: 1px solid var(--border-color) !important;
-            background-color: #fff !important; border-radius: 8px; font-size: 15px;
-            color: var(--text-dark) !important; outline: none; transition: border-color 0.3s;
+            width: 100%; padding: 12px 16px; border: 1px solid var(--border-color);
+            background-color: var(--bg-light); border-radius: 8px; font-size: 0.95rem;
+            color: var(--text-dark); outline: none; transition: border-color 0.2s;
         }
 
-        .form-group input:focus, .form-group select:focus { border-color: var(--btn-primary) !important; }
+        .form-group input:focus, .form-group select:focus {
+            border-color: var(--btn-primary); background-color: white;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
 
         .submit-btn {
             background-color: var(--btn-primary); color: white; border: none;
-            border-radius: 6px; padding: 14px 24px; font-size: 16px; font-weight: 600;
-            cursor: pointer; transition: all 0.3s ease; width: 100%; margin-top: 10px;
-            box-shadow: none; letter-spacing: 0.3px;
+            border-radius: 8px; padding: 14px 24px; font-size: 1rem; font-weight: 600;
+            cursor: pointer; transition: background 0.2s; width: 100%; margin-top: 10px;
         }
-
-        .submit-btn:hover { background-color: var(--btn-hover); transform: translateY(-2px); }
+        .submit-btn:hover { background-color: var(--btn-hover); }
 
         #formMessage {
             text-align: center; margin-top: 15px; font-weight: 500;
-            padding: 10px; border-radius: 6px; display: none;
+            padding: 12px; border-radius: 8px; display: none; font-size: 0.9rem;
         }
+        .msg-success { background-color: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
+        .msg-error { background-color: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
 
-        .msg-success { background-color: rgba(0, 200, 83, 0.1); color: var(--success); }
-        .msg-error { background-color: rgba(217, 83, 79, 0.1); color: var(--danger); }
-
-        .home-link {
-            color: #a0aec0; margin-right: auto; margin-left: 30px;
-            display: flex; align-items: center; transition: all 0.3s ease; text-decoration: none;
+        /* --- SYSTEM DIRECTORY TABLE --- */
+        .table-container { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th { background-color: var(--bg-light); color: var(--text-light); font-size: 0.85rem; text-transform: uppercase; padding: 12px 16px; border-bottom: 2px solid var(--border-color); }
+        td { padding: 16px; border-bottom: 1px solid var(--border-color); font-size: 0.95rem; color: var(--brand-dark); font-weight: 500;}
+        tr:hover { background-color: #f8fafc; }
+        
+        .role-tag {
+            padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
         }
+        .tag-student { background: rgba(37, 99, 235, 0.1); color: var(--btn-primary); }
+        .tag-staff { background: rgba(139, 92, 246, 0.1); color: #7c3aed; }
 
-        .home-link:hover {
-            color: var(--btn-primary); transform: translateY(-1px); filter: none;
-        }
-
-        @media (max-width: 768px) {
+        @media (max-width: 900px) {
             .dashboard-container { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: 1fr; }
             .form-grid { grid-template-columns: 1fr; }
-        }
-
-        @media (max-width: 600px) {
-            .home-link { margin-left: 15px; }
         }
     </style>
 </head>
@@ -153,8 +190,7 @@
     <nav class="navbar">
         <div class="brand-logo">
             <div class="logo-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="12" cy="12" r="10"></circle>
                     <ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(45 12 12)"></ellipse>
                     <ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(-45 12 12)"></ellipse>
@@ -163,8 +199,7 @@
             <div class="nav-title">IFA <span>System Admin</span></div>
         </div>
         <a href="index.html" class="home-link" title="Back to Login">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
                 <polyline points="9 22 9 12 15 12 15 22"></polyline>
             </svg>
@@ -176,54 +211,126 @@
     </nav>
 
     <div class="dashboard-container">
+        
         <div class="card profile-sidebar">
             <div class="avatar" id="avatarInitials">--</div>
             <h2 class="admin-name" id="adminName">Loading...</h2>
-            <div class="admin-badge">Level 1 Clearance</div>
-            <p style="color: var(--text-light); font-size: 0.9rem;">User Registration System</p>
+            <div class="admin-badge">Master Control</div>
+            <p style="color: var(--text-light); font-size: 0.9rem; line-height: 1.5;">Manage academy registrations and oversee system directory.</p>
         </div>
 
-        <div class="card">
-            <div class="section-header">
-                <h3>Register New Account</h3>
-            </div>
-
-            <form id="addUserForm">
-                <div class="form-grid">
-                    <div class="form-group full-width">
-                        <label>Account Role</label>
-                        <select id="newRole" required onchange="updateLabels()">
-                            <option value="student">Student</option>
-                            <option value="staff">Faculty / Staff</option>
-                        </select>
+        <div class="main-column">
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon blue">
+                        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
                     </div>
-
-                    <div class="form-group">
-                        <label>Full Name</label>
-                        <input type="text" id="newName" required placeholder="e.g. Alice Johnson">
-                    </div>
-
-                    <div class="form-group">
-                        <label>Email Address</label>
-                        <input type="email" id="newEmail" required placeholder="e.g. alice@ifa.edu">
-                    </div>
-
-                    <div class="form-group full-width">
-                        <label id="specLabel">Academic Major</label>
-                        <input type="text" id="specialization" required placeholder="e.g. Computer Science">
-                    </div>
-
-                    <div class="form-group full-width">
-                        <label style="color: var(--btn-primary);">Register Number (Becomes Username & Password)</label>
-                        <input type="text" id="registerNumber" required placeholder="Enter ID number">
+                    <div class="stat-info">
+                        <h4>Total Students</h4>
+                        <p id="statStudents">--</p>
                     </div>
                 </div>
+                <div class="stat-card">
+                    <div class="stat-icon orange">
+                        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+                    </div>
+                    <div class="stat-info">
+                        <h4>Faculty & Staff</h4>
+                        <p id="statStaff">--</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon green">
+                        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                    </div>
+                    <div class="stat-info">
+                        <h4>Server Status</h4>
+                        <p style="font-size: 1.2rem; margin-top: 5px; color: var(--success);">Online (24/7)</p>
+                    </div>
+                </div>
+            </div>
 
-                <button type="submit" class="submit-btn" id="submitBtn">Create Account</button>
-                <div id="formMessage"></div>
-            </form>
-        </div>
-    </div>
+            <div class="card">
+                <div class="section-header">
+                    <h3>Register New Account</h3>
+                </div>
+
+                <form id="addUserForm">
+                    <div class="form-grid">
+                        <div class="form-group full-width">
+                            <label>Account Role</label>
+                            <select id="newRole" required onchange="updateLabels()">
+                                <option value="student">Student</option>
+                                <option value="staff">Faculty / Staff</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" id="newName" required placeholder="e.g. Alice Johnson">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <input type="email" id="newEmail" required placeholder="e.g. alice@ifa.edu">
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label id="specLabel">Academic Major</label>
+                            <input type="text" id="specialization" required placeholder="e.g. Computer Science">
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label style="color: var(--btn-primary);">Register Number (Becomes Username & Password)</label>
+                            <input type="text" id="registerNumber" required placeholder="Enter ID number">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="submit-btn" id="submitBtn">Create Account & Add to Directory</button>
+                    <div id="formMessage"></div>
+                </form>
+            </div>
+
+            <div class="card">
+                <div class="section-header">
+                    <h3>System Directory</h3>
+                    <button style="background: none; border: none; color: var(--text-light); cursor: pointer;" title="Refresh Directory">
+                        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+                    </button>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Register No.</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                            </tr>
+                        </thead>
+                        <tbody id="directoryBody">
+                            <tr>
+                                <td>Test Student</td>
+                                <td>STU-001</td>
+                                <td>test@ifa.edu</td>
+                                <td><span class="role-tag tag-student">Student</span></td>
+                            </tr>
+                            <tr>
+                                <td>Prof. Smith</td>
+                                <td>FAC-001</td>
+                                <td>smith@ifa.edu</td>
+                                <td><span class="role-tag tag-staff">Staff</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p id="tableNote" style="text-align: center; color: var(--text-light); font-size: 0.85rem; margin-top: 20px;">
+                        Showing placeholder data. Backend connection required to display live database users.
+                    </p>
+                </div>
+            </div>
+
+        </div> </div>
 
     <script>
         // 1. Session Check
@@ -260,7 +367,6 @@
             const name = document.getElementById('newName').value;
             const email = document.getElementById('newEmail').value;
             const specialization = document.getElementById('specialization').value;
-
             const registerNumber = document.getElementById('registerNumber').value;
 
             submitBtn.textContent = "Processing...";
@@ -294,6 +400,7 @@
                     msgDiv.className = 'msg-success';
                     msgDiv.textContent = data.message;
                     document.getElementById('addUserForm').reset();
+                    // Optional: You could write logic here to dynamically add the new user to the table!
                 } else {
                     msgDiv.className = 'msg-error';
                     msgDiv.textContent = data.message;
@@ -303,7 +410,7 @@
                 msgDiv.className = 'msg-error';
                 msgDiv.textContent = "Server connection failed.";
             } finally {
-                submitBtn.textContent = "Create Account";
+                submitBtn.textContent = "Create Account & Add to Directory";
                 submitBtn.disabled = false;
             }
         });
