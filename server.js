@@ -85,7 +85,7 @@ seedDatabase();
 // 4. SECURE API ENDPOINTS
 // ==========================================
 
-// A simple ping route for Uptime Monitors (Fixes the 404 Error)
+// A simple ping route for Uptime Monitors
 app.get('/', (req, res) => {
     res.status(200).send('IFA Backend is awake and running perfectly!');
 });
@@ -94,7 +94,6 @@ app.post('/login', async (req, res) => {
     const { role, username, password } = req.body;
 
     try {
-        // Case-insensitive search for username
         const user = await User.findOne({ 
             role, 
             username: { $regex: new RegExp(`^${username}$`, 'i') } 
@@ -166,7 +165,8 @@ app.get('/api/student/:id', async (req, res) => {
         res.status(500).json({ message: 'Server error' });
     }
 });
-// Get Staff Profile Data
+
+// THIS IS THE MISSING ROUTE FOR THE STAFF DASHBOARD
 app.get('/api/staff/:id', async (req, res) => {
     try {
         const profile = await StaffProfile.findById(req.params.id);
@@ -176,40 +176,30 @@ app.get('/api/staff/:id', async (req, res) => {
         res.status(500).json({ message: 'Server error' });
     }
 });
-// ==========================================
+
 // ADMIN ROUTE: GET ALL USERS FOR DIRECTORY
-// ==========================================
 app.get('/api/users/all', async (req, res) => {
     try {
-        // Find all users except the master admin
         const users = await User.find({ role: { $ne: 'admin' } }); 
         
         let directory = [];
         let studentCount = 0;
         let staffCount = 0;
 
-        // Loop through the users to get their real names and emails
         for (let u of users) {
             let name = "Unknown";
             let email = "Unknown";
 
             if (u.role === 'student') {
                 const profile = await StudentProfile.findById(u.profileId);
-                if (profile) { 
-                    name = profile.name; 
-                    email = profile.email; 
-                }
+                if (profile) { name = profile.name; email = profile.email; }
                 studentCount++;
             } else if (u.role === 'staff') {
                 const profile = await StaffProfile.findById(u.profileId);
-                if (profile) { 
-                    name = profile.name; 
-                    email = profile.email; 
-                }
+                if (profile) { name = profile.name; email = profile.email; }
                 staffCount++;
             }
 
-            // Add them to our directory list
             directory.push({
                 name: name,
                 username: u.username,
@@ -218,7 +208,6 @@ app.get('/api/users/all', async (req, res) => {
             });
         }
 
-        // Send the final counts and directory back to the dashboard
         res.status(200).json({
             stats: { students: studentCount, staff: staffCount },
             directory: directory
