@@ -295,7 +295,7 @@
             <div class="card">
                 <div class="section-header">
                     <h3>System Directory</h3>
-                    <button style="background: none; border: none; color: var(--text-light); cursor: pointer;" title="Refresh Directory">
+                    <button onclick="loadDirectory()" style="background: none; border: none; color: var(--text-light); cursor: pointer;" title="Refresh Directory">
                         <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
                     </button>
                 </div>
@@ -311,21 +311,15 @@
                         </thead>
                         <tbody id="directoryBody">
                             <tr>
-                                <td>Test Student</td>
-                                <td>STU-001</td>
-                                <td>test@ifa.edu</td>
-                                <td><span class="role-tag tag-student">Student</span></td>
-                            </tr>
-                            <tr>
-                                <td>Prof. Smith</td>
-                                <td>FAC-001</td>
-                                <td>smith@ifa.edu</td>
-                                <td><span class="role-tag tag-staff">Staff</span></td>
+                                <td>Loading data...</td>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
                             </tr>
                         </tbody>
                     </table>
                     <p id="tableNote" style="text-align: center; color: var(--text-light); font-size: 0.85rem; margin-top: 20px;">
-                        Showing placeholder data. Backend connection required to display live database users.
+                        Fetching live database users...
                     </p>
                 </div>
             </div>
@@ -400,7 +394,10 @@
                     msgDiv.className = 'msg-success';
                     msgDiv.textContent = data.message;
                     document.getElementById('addUserForm').reset();
-                    // Optional: You could write logic here to dynamically add the new user to the table!
+                    
+                    // Automatically refresh the directory table
+                    loadDirectory(); 
+                    
                 } else {
                     msgDiv.className = 'msg-error';
                     msgDiv.textContent = data.message;
@@ -415,7 +412,37 @@
             }
         });
 
-        // 4. Logout
+        // 4. Fetch and Render Live Directory Data
+        async function loadDirectory() {
+            try {
+                const response = await fetch('https://schl-management-system2.onrender.com/api/users/all', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('statStudents').textContent = data.stats.students;
+                    document.getElementById('statStaff').textContent = data.stats.staff;
+                    document.getElementById('tableNote').style.display = 'none';
+                    
+                    let tableHTML = '';
+                    data.directory.forEach(user => {
+                        const tagClass = user.role === 'student' ? 'tag-student' : 'tag-staff';
+                        tableHTML += `<tr><td>${user.name}</td><td>${user.username}</td><td>${user.email}</td><td><span class="role-tag ${tagClass}">${user.role}</span></td></tr>`;
+                    });
+                    document.getElementById('directoryBody').innerHTML = tableHTML || '<tr><td colspan="4" style="text-align:center;">No users registered yet.</td></tr>';
+                } else {
+                    document.getElementById('tableNote').textContent = "Failed to load directory data.";
+                }
+            } catch (error) {
+                document.getElementById('tableNote').textContent = "Could not reach the server.";
+            }
+        }
+
+        // Run this function immediately when the page loads!
+        loadDirectory();
+
+        // 5. Logout
         function logout() {
             localStorage.removeItem('userSession');
             localStorage.removeItem('authToken');
