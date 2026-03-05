@@ -268,7 +268,7 @@
                 setTimeout(() => {
                     if (data.user.role === 'student') window.location.href = 'student-profile.html';
                     else if (data.user.role === 'admin') window.location.href = 'admin-profile.html';
-                    else alert("Staff dashboard coming soon.");
+                    else if (data.user.role === 'staff') window.location.href = 'staff-profile.html';
                 }, 1000);
             } else {
                 messageDiv.style.color = "var(--danger)";

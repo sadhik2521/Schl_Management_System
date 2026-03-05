@@ -166,7 +166,16 @@ app.get('/api/student/:id', async (req, res) => {
         res.status(500).json({ message: 'Server error' });
     }
 });
-
+// Get Staff Profile Data
+app.get('/api/staff/:id', async (req, res) => {
+    try {
+        const profile = await StaffProfile.findById(req.params.id);
+        if (profile) res.status(200).json(profile);
+        else res.status(404).json({ message: 'Profile not found' });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error' });
+    }
+});
 // ==========================================
 // ADMIN ROUTE: GET ALL USERS FOR DIRECTORY
 // ==========================================
