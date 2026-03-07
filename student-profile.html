@@ -229,7 +229,7 @@
         }
 
         // 3. Inject the real data into the HTML
-        function renderProfile(profile, userId) {
+       function renderProfile(profile, userId) {
             document.getElementById('loading').style.display = 'none';
             document.getElementById('dashboardContent').style.display = 'grid';
 
@@ -239,8 +239,14 @@
             document.getElementById('profileMajor').textContent = profile.major;
             document.getElementById('profileEnrollment').textContent = `Active since ${profile.enrollmentDate}`;
             
-            const initials = profile.name.split(' ').map(n => n[0]).join('');
-            document.getElementById('avatarInitials').textContent = initials;
+            // ---> MAGIC PHOTO LOGIC <---
+            const avatarDiv = document.getElementById('avatarInitials');
+            if (profile.profilePhoto && profile.profilePhoto !== "") {
+                avatarDiv.innerHTML = `<img src="${profile.profilePhoto}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+            } else {
+                const initials = profile.name.split(' ').map(n => n[0]).join('');
+                avatarDiv.textContent = initials;
+            }
 
             let workHTML = '';
             profile.recentWork.forEach(work => {
