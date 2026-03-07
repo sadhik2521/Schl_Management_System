@@ -82,6 +82,7 @@
             display: flex; justify-content: center; align-items: center;
             color: white; font-size: 3rem; font-weight: bold;
             box-shadow: 0 10px 20px rgba(0, 86, 210, 0.2); border: 4px solid white;
+            overflow: hidden; /* Added to ensure image stays round */
         }
 
         .student-name { font-size: 1.5rem; color: var(--brand-dark); margin-bottom: 5px; }
@@ -229,7 +230,7 @@
         }
 
         // 3. Inject the real data into the HTML
-       function renderProfile(profile, userId) {
+        function renderProfile(profile, userId) {
             document.getElementById('loading').style.display = 'none';
             document.getElementById('dashboardContent').style.display = 'grid';
 
@@ -273,4 +274,4 @@
         }
     </script>
 </body>
-</html>
+</html>     
